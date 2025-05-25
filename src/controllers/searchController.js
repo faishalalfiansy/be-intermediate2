@@ -1,4 +1,4 @@
-const courseModel = require('../models/courseModel');
+const courseModel = require('../models/searchModels');
 
 module.exports = {
   searchCourses: async (req, res) => {
