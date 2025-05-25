@@ -1,20 +1,29 @@
-const mysql = require('mysql2');
 require('dotenv').config();
+const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
+// Buat koneksi ke database
+const db = mysql.createConnection({
   host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
-connection.connect((err) => {
-  if (err) throw err;
-  console.log('Connected to MySQL');
+// Connect ke database
+db.connect((err) => {
+  if (err) {
+    console.error('Gagal konek ke MySQL:', err.stack);
+    process.exit(1); // Stop aplikasi jika error
+  }
+  console.log('erhubung ke MySQL sebagai ID', db.threadId);
 });
 
-module.exports = connection;
+// Handle error setelah koneksi
+db.on('error', (err) => {
+  console.error('MySQL Error:', err.code);
+  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+  }
+});
+
+module.exports = db;
