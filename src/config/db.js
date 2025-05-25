@@ -16,7 +16,7 @@ db.connect((err) => {
     console.error('Gagal konek ke MySQL:', err.stack);
     process.exit(1); // Stop aplikasi jika error
   }
-  console.log('erhubung ke MySQL sebagai ID', db.threadId);
+  console.log('terhubung ke MySQL sebagai ID', db.threadId);
 });
 
 // Handle error setelah koneksi

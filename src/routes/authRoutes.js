@@ -11,4 +11,7 @@ router.post('/login', authController.login);
 // Update User (PUT)
 router.put('/updates/:id', authController.updateUser);
 
+// Get User by ID (GET)
+router.get('/profiles/:id', authController.getUser);
+
 module.exports = router;

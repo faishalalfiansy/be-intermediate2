@@ -27,6 +27,11 @@ const User = {
     const sql = "UPDATE user SET ? WHERE user_id = ?";
     db.query(sql, [data, id], callback);
   },
+
+  getById: (id, callback) => {
+    const sql = "SELECT user_id, name, email, no_hp FROM user WHERE user_id = ?";
+    db.query(sql, [id], callback);
+  }
 };
 
 module.exports = User;

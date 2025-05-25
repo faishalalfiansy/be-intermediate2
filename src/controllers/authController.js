@@ -129,3 +129,34 @@ exports.updateUser = (req, res) => {
     });
   });
 };
+
+exports.getUser = (req, res) => {
+    const user_id = req.params.id;
+      User.getById(user_id, (err, results) => {
+        if (err) {
+          return res.status(500).json({ 
+            success: false,
+            message: "Error server" 
+          });
+        }
+  
+        if (results.length === 0) {
+          return res.status(404).json({ 
+            success: false,
+            message: "User tidak ditemukan" 
+          });
+        }
+  
+        const user = results[0];
+        res.json({ 
+          success: true,
+          user: {
+            user_id: user.user_id,
+            name: user.name,
+            email: user.email,  
+            no_hp: user.no_hp
+          }
+        });
+      })
+  };
+  
