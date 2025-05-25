@@ -2,11 +2,16 @@ const db = require('../config/db');
 
 module.exports = {
   register: async ({ name, email, password, no_hp }) => {
-    const [result] = await db.query(
+    try {
+      const [result] = await db.query(
       "INSERT INTO user (name, email, password, no_hp) VALUES (?, ?, ?, ?)",
       [name, email, password, no_hp]
     );
     return result.insertId;
+    }catch (error) {
+    console.error("Database Error:", error);
+    throw error;
+  }
   },
 
   login: async (email) => {
@@ -19,5 +24,5 @@ module.exports = {
       "UPDATE user SET name = ?, email = ?, no_hp = ? WHERE user_id = ?",
       [name, email, no_hp, userId]
     );
-  }
+  },
 };

@@ -3,39 +3,58 @@ const userModel = require('../models/userModel');
 module.exports = {
   register: async (req, res) => {
     try {
-      if (req.body.password !== req.body.repassword) {
-        return res.status(400).json({
+      const { name, email, password, repassword, no_hp } = req.body;
+
+      if (!name || !email || !password || !repassword) {
+        return res.status(400).json({ 
           success: false,
-          error: "Password tidak sama",
-          suggestion: "Periksa kembali password Anda"
+          error: "Name, email, password, dan repassword wajib diisi" 
         });
       }
 
-      const existingUser = await userModel.login(req.body.email);
-      if (existingUser) {
+      if (password !== repassword) {
         return res.status(400).json({
           success: false,
-          error: "Email sudah terdaftar",
-          suggestion: "Gunakan email lain"
+          error: "Password tidak sama"
         });
       }
-      
-      const userId = await userModel.register(req.body);
-      res.status(201).json({
+
+      const existingUser = await userModel.login(email);
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          error: "Email sudah terdaftar"
+        });
+      }
+
+      const userId = await userModel.register({
+        name,
+        email,
+        password,
+        no_hp: no_hp || null
+      });
+
+      return res.status(201).json({
         success: true,
         message: "Registrasi berhasil",
         data: {
-          user_id: userId
+          user_id: userId,
+          name,
+          email
         },
         meta: {
           timestamp: new Date().toISOString()
         }
       });
+
     } catch (error) {
-      res.status(500).json({
+      console.error('Registration Error:', error);
+      return res.status(500).json({
         success: false,
-        error: "Server error",
-        detail: process.env.NODE_ENV === 'development' ? error.message : undefined
+        error: "Terjadi kesalahan server",
+        ...(process.env.NODE_ENV === 'development' && {
+          detail: error.message
+        })
       });
     }
   },
@@ -58,6 +77,34 @@ module.exports = {
           user_id: user.user_id,
           name: user.name,
           email: user.email
+        },
+        meta: {
+          timestamp: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        error: "Server error",
+        detail: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  },
+  updateProfile: async (req, res) => {
+    try {
+      const { user_id } = req.params;
+      const { name, email, no_hp } = req.body;
+
+      await userModel.updateProfile(user_id, { name, email, no_hp });
+
+      res.json({
+        success: true,
+        message: "Profil berhasil diperbarui",
+        data: {
+          user_id,
+          name,
+          email,
+          no_hp
         },
         meta: {
           timestamp: new Date().toISOString()
