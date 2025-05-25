@@ -5,10 +5,6 @@ module.exports = {
     try {
 
       const { kategori, min_price, max_price } = req.query;
-      
-      if (min_price && isNaN(min_price)) {
-        return res.status(400).json({ error: "Harga minimal harus angka" });
-      }
 
       const results = await courseModel.searchCourses({
         kategori,
