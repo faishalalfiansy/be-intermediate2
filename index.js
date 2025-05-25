@@ -13,6 +13,10 @@ app.use('/auth', authRoutes);
 
 app.use('/search', searchRoutes);
 
-app.listen(3000, () => {
-  console.log('Server running on http://localhost:3306');
+app.get('/', (req, res) => {
+  res.send('Server berjalan dengan sukses!');
+});
+
+app.listen(5000, () => {
+  console.log('Server running on http://localhost:5000');
 });
