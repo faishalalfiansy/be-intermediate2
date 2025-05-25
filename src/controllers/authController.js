@@ -89,10 +89,7 @@ exports.login = (req, res) => {
       success: true,
       message: "Login berhasil",
       user: {
-        user_id: user.user_id,
-        name: user.name,
-        email: user.email,
-        no_hp: user.no_hp
+        name: user.name
       }
     });
   });
@@ -130,33 +127,42 @@ exports.updateUser = (req, res) => {
   });
 };
 
-exports.getUser = (req, res) => {
-    const user_id = req.params.id;
-      User.getById(user_id, (err, results) => {
-        if (err) {
-          return res.status(500).json({ 
-            success: false,
-            message: "Error server" 
-          });
-        }
-  
-        if (results.length === 0) {
-          return res.status(404).json({ 
-            success: false,
-            message: "User tidak ditemukan" 
-          });
-        }
-  
-        const user = results[0];
-        res.json({ 
-          success: true,
-          user: {
-            user_id: user.user_id,
-            name: user.name,
-            email: user.email,  
-            no_hp: user.no_hp
-          }
-        });
-      })
-  };
-  
+exports.getUser = async (req, res) => {
+  const user_id = req.params.id;
+
+  if (!user_id) {
+    return res.status(400).json({
+      success: false,
+      message: "User ID tidak boleh kosong",
+    });
+  }
+
+  User.getById(user_id, (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Terjadi kesalahan pada server",
+      });
+    }
+
+    if (!results || results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User tidak ditemukan",
+      });
+    }
+
+    const user = results[0];
+
+    res.json({ 
+      success: true,
+      message: "data user",
+      user: {
+        name: user.name,
+        email: user.email,
+        no_hp: user.no_hp
+      }
+    });
+  });
+};
